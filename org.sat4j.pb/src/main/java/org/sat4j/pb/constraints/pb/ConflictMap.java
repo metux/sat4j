@@ -30,6 +30,14 @@
 package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
@@ -773,7 +781,7 @@ public class ConflictMap extends MapPb implements IConflict {
         assert weightedLits.size() > 0;
         Set<Integer> levels = new TreeSet<Integer>();
         levels.add(0);
-        for (int i=0; i<weightedLits.size(); i++) {
+        for (int i = 0; i < weightedLits.size(); i++) {
             int l = weightedLits.getLit(i);
             if (voc.isFalsified(l))
                 levels.add(voc.getLevel(l));
@@ -782,14 +790,15 @@ public class ConflictMap extends MapPb implements IConflict {
         bylvl.put(0, BigInteger.ZERO);
         List<Integer> vv_indices = new ArrayList<Integer>();
         BigInteger s = degree.negate();
-        for (int i=0; i<weightedLits.size(); i++) {
+        for (int i = 0; i < weightedLits.size(); i++) {
             int l = weightedLits.getLit(i);
             BigInteger coef = weightedLits.getCoef(i);
             if (voc.isFalsified(l)) {
                 if (!bylvl.containsKey(voc.getLevel(l)))
                     bylvl.put(voc.getLevel(l), coef);
                 else
-                    bylvl.put(voc.getLevel(l), bylvl.get(voc.getLevel(l)).add(coef));
+                    bylvl.put(voc.getLevel(l),
+                            bylvl.get(voc.getLevel(l)).add(coef));
             }
             vv_indices.add(i);
             s = s.add(coef);
@@ -798,13 +807,14 @@ public class ConflictMap extends MapPb implements IConflict {
         Collections.sort(vv_indices, new Comparator<Integer>() {
             @Override
             public int compare(Integer i, Integer j) {
-                return weightedLits.getCoef(j).compareTo(weightedLits.getCoef(i));
+                return weightedLits.getCoef(j)
+                        .compareTo(weightedLits.getCoef(i));
             }
         });
         int at = 0;
         for (int lvl : levels) {
             s = s.subtract(bylvl.get(lvl));
-            for (; ; at++) {
+            for (;; at++) {
                 assert at < vv_indices.size();
                 int i = vv_indices.get(at);
                 int l = weightedLits.getLit(i);
@@ -813,7 +823,8 @@ public class ConflictMap extends MapPb implements IConflict {
                     if (coef.compareTo(s) > 0) {
                         assert lvl == oldGetBacktrackLevel(maxLevel);
                         return lvl;
-                    } else break;
+                    } else
+                        break;
                 }
             }
         }
