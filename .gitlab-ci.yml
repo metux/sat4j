@@ -18,4 +18,3 @@ jars-j8:
        paths:
         - dist/NIGHTLY/*.jar
        expire_in: 4 weeks
-  
