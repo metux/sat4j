@@ -769,46 +769,56 @@ public class ConflictMap extends MapPb implements IConflict {
      *         assertive.
      */
     public int getBacktrackLevel(int maxLevel) {
-        if (this.backtrackLevel == NOTCOMPUTED) {
-            // we are looking for a level higher than maxLevel
-            // where the constraint is still assertive
-            VecInt lits;
-            int level;
-            int indStop = levelToIndex(maxLevel) - 1;
-            int indStart = levelToIndex(0);
-            BigInteger slack = computeSlack(0)
-                    .subtract(ConflictMap.this.degree);
-            int previous = 0;
-            for (int indLevel = indStart; indLevel <= indStop; indLevel++) {
-                if (ConflictMap.this.byLevel[indLevel] != null) {
-                    level = indexToLevel(indLevel);
-                    assert ConflictMap.this.computeSlack(level)
-                            .subtract(ConflictMap.this.degree).equals(slack);
-                    if (ConflictMap.this.isImplyingLiteralOrdered(level, slack))
-                        break;
-
-                    // updating the new slack
-                    lits = ConflictMap.this.byLevel[indLevel];
-                    int lit;
-                    for (IteratorInt iterator = lits.iterator(); iterator
-                            .hasNext();) {
-                        lit = iterator.next();
-                        if (ConflictMap.this.voc.isFalsified(lit)
-                                && ConflictMap.this.voc.getLevel(
-                                        lit) == indexToLevel(indLevel))
-                            slack = slack.subtract(
-                                    ConflictMap.this.weightedLits.get(lit));
-
-                    }
-                    if (!lits.isEmpty())
-                        previous = level;
-
+        // Code by Jan Elffers from KTH
+        assert weightedLits.size() > 0;
+        Set<Integer> levels = new TreeSet<Integer>();
+        levels.add(0);
+        for (int i=0; i<weightedLits.size(); i++) {
+            int l = weightedLits.getLit(i);
+            if (voc.isFalsified(l))
+                levels.add(voc.getLevel(l));
+        }
+        Map<Integer, BigInteger> bylvl = new HashMap<Integer, BigInteger>();
+        bylvl.put(0, BigInteger.ZERO);
+        List<Integer> vv_indices = new ArrayList<Integer>();
+        BigInteger s = degree.negate();
+        for (int i=0; i<weightedLits.size(); i++) {
+            int l = weightedLits.getLit(i);
+            BigInteger coef = weightedLits.getCoef(i);
+            if (voc.isFalsified(l)) {
+                if (!bylvl.containsKey(voc.getLevel(l)))
+                    bylvl.put(voc.getLevel(l), coef);
+                else
+                    bylvl.put(voc.getLevel(l), bylvl.get(voc.getLevel(l)).add(coef));
+            }
+            vv_indices.add(i);
+            s = s.add(coef);
+        }
+        // sort by coefficient, in descending order
+        Collections.sort(vv_indices, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer i, Integer j) {
+                return weightedLits.getCoef(j).compareTo(weightedLits.getCoef(i));
+            }
+        });
+        int at = 0;
+        for (int lvl : levels) {
+            s = s.subtract(bylvl.get(lvl));
+            for (; ; at++) {
+                assert at < vv_indices.size();
+                int i = vv_indices.get(at);
+                int l = weightedLits.getLit(i);
+                BigInteger coef = weightedLits.getCoef(i);
+                if (voc.getLevel(l) == -1 || voc.getLevel(l) > lvl) {
+                    if (coef.compareTo(s) > 0) {
+                        assert lvl == oldGetBacktrackLevel(maxLevel);
+                        return lvl;
+                    } else break;
                 }
             }
-            assert previous == oldGetBacktrackLevel(maxLevel);
-            return previous;
-        } else
-            return this.backtrackLevel;
+        }
+        assert false;
+        return 0;
     }
 
     public int oldGetBacktrackLevel(int maxLevel) {
