@@ -767,6 +767,28 @@ public class ConflictMap extends MapPb implements IConflict {
         return true;
     }
 
+    private static final class Counter {
+
+        private BigInteger value;
+
+        public Counter() {
+            value = BigInteger.ZERO;
+        }
+
+        public Counter(BigInteger initialValue) {
+            value = initialValue;
+        }
+
+        public void inc(BigInteger amount) {
+            value = value.add(amount);
+        }
+
+        public BigInteger getValue() {
+            return value;
+        }
+
+    }
+
     /**
      * computes the level for the backtrack : the highest decision level for
      * which the conflict is assertive.
@@ -786,19 +808,20 @@ public class ConflictMap extends MapPb implements IConflict {
             if (voc.isFalsified(l))
                 levels.add(voc.getLevel(l));
         }
-        Map<Integer, BigInteger> bylvl = new HashMap<Integer, BigInteger>();
-        bylvl.put(0, BigInteger.ZERO);
-        List<Integer> vv_indices = new ArrayList<Integer>();
+        Map<Integer, Counter> bylvl = new HashMap<Integer, Counter>();
+        bylvl.put(0, new Counter());
+        List<Integer> vv_indices = new ArrayList<Integer>(weightedLits.size());
         BigInteger s = degree.negate();
         for (int i = 0; i < weightedLits.size(); i++) {
             int l = weightedLits.getLit(i);
             BigInteger coef = weightedLits.getCoef(i);
             if (voc.isFalsified(l)) {
-                if (!bylvl.containsKey(voc.getLevel(l)))
-                    bylvl.put(voc.getLevel(l), coef);
-                else
-                    bylvl.put(voc.getLevel(l),
-                            bylvl.get(voc.getLevel(l)).add(coef));
+                Counter counter = bylvl.get(voc.getLevel(l));
+                if (counter == null) {
+                    bylvl.put(voc.getLevel(l), new Counter(coef));
+                } else {
+                    counter.inc(coef);
+                }
             }
             vv_indices.add(i);
             s = s.add(coef);
@@ -812,8 +835,8 @@ public class ConflictMap extends MapPb implements IConflict {
             }
         });
         int at = 0;
-        for (int lvl : levels) {
-            s = s.subtract(bylvl.get(lvl));
+        for (Integer lvl : levels) {
+            s = s.subtract(bylvl.get(lvl).getValue());
             for (;; at++) {
                 assert at < vv_indices.size();
                 int i = vv_indices.get(at);
