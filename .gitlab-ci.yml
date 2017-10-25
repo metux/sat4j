@@ -15,5 +15,5 @@ jars-j8:
       - ant -Drelease=NIGHTLY kth
     artifacts:
        paths:
-        - dist/NIGHTLY/*.jar
+        - dist/NIGHTLY/sat4j-kth.jar
        expire_in: 4 weeks
