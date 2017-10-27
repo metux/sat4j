@@ -326,7 +326,7 @@ public class ConflictMap extends MapPb implements IConflict {
             System.out.println("skip");
             System.out.println("coef: " + this.weightedLits.get(nLitImplied) + ", slack: " + slackConflict());
             if (this.weightedLits.get(nLitImplied).negate()
-                    .compareTo(currentSlack.subtract(degree)) > 0) {
+                    .compareTo(slackConflict() /*currentSlack.subtract(degree) */) > 0) {
                 if (this.endingSkipping)
                     stats.numberOfEndingSkipping++;
                 else
