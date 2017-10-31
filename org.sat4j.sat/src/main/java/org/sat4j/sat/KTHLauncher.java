@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.minisat.learning.MiniSATLearning;
+import org.sat4j.minisat.orders.NaturalStaticOrder;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
@@ -70,6 +71,8 @@ public class KTHLauncher {
                 "Output the search as a dot file");
         options.addOption("detect", "detect-cards", true,
                 "Detect cardinality constraints from original constraints. Legal value are never, preproc, inproc, lazy.");
+        options.addOption("natural", "natural-static-order", false,
+                "Use a static order for decisions, using the natural order of the variables, from 1 to n.");
         Option op = options.getOption("coeflim");
         op.setArgName("limit");
         op = options.getOption("coeflim-small");
@@ -288,6 +291,9 @@ public class KTHLauncher {
                             + " is not a supported value for option weaken-nonimplied");
                     return;
                 }
+            }
+            if (line.hasOption("natural")) {
+                cpsolver.setOrder(new NaturalStaticOrder());
             }
             System.out.println(pbsolver.toString("c "));
             String[] leftArgs = line.getArgs();
