@@ -68,7 +68,7 @@ public class NaturalStaticOrder implements IOrder {
 
     @Override
     public void undo(int x) {
-        index = Math.min(index, LiteralsUtils.var(x));
+        index = Math.min(index, x);
     }
 
     @Override
