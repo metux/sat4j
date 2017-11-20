@@ -135,7 +135,7 @@ public class PBSolverCP extends PBSolver {
         int currentLevel = this.voc.getLevel(litImplied);
         IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
         assert confl.slackConflict().signum() < 0;
-        while (!confl.isAssertive(currentLevel)) {
+        while (!confl.isUnsat() && !confl.isAssertive(currentLevel)) {
             if (!this.undertimeout) {
                 throw new TimeoutException();
             }
@@ -149,7 +149,6 @@ public class PBSolverCP extends PBSolver {
                 break;
             }
             undoOne();
-            // assert decisionLevel() >= 0;
             if (decisionLevel() == 0) {
                 break;
             }
@@ -166,7 +165,7 @@ public class PBSolverCP extends PBSolver {
             assert litImplied > 1;
         }
         assert confl.isAssertive(currentLevel) || this.trail.size() == 1
-                || decisionLevel() == 0;
+                || decisionLevel() == 0 || confl.isUnsat();
 
         assert currentLevel == decisionLevel();
         confl.undoOne(this.trail.last());
@@ -175,9 +174,9 @@ public class PBSolverCP extends PBSolver {
         updateNumberOfReducedLearnedConstraints(confl);
         // necessary informations to build a PB-constraint
         // are kept from the conflict
-        if (confl.size() == 0
-                || (decisionLevel() == 0 || this.trail.size() == 0)
-                        && confl.slackConflict().signum() < 0) {
+        if (confl.isUnsat() || confl.size() == 0 || decisionLevel() == 0
+                || (this.trail.size() == 0
+                        && confl.slackConflict().signum() < 0)) {
             results.setReason(null);
             results.setBacktrackLevel(-1);
             return;
@@ -191,14 +190,9 @@ public class PBSolverCP extends PBSolver {
 
         // the conflict give the highest decision level for the backtrack
         // (which is less than current level)
-        // assert confl.isAssertive(currentLevel);
-        if (decisionLevel() == 0 || (this.trail.size() == 0
-                && confl.getBacktrackLevel(currentLevel) > 0)) {
-            results.setBacktrackLevel(-1);
-            results.setReason(null);
-        } else {
-            results.setBacktrackLevel(confl.getBacktrackLevel(currentLevel));
-        }
+        int backtrackLevel = confl.getBacktrackLevel(currentLevel);
+        results.setBacktrackLevel(backtrackLevel);
+        // }
     }
 
     protected IConflict chooseConflict(PBConstr myconfl, int level) {
@@ -212,8 +206,8 @@ public class PBSolverCP extends PBSolver {
                 + this.getClass().getName() + ")\n"
                 + (this.noRemove ? ""
                         : prefix + " - Removing satisfied literals at a higher level before CP \n")
-                + (this.skipAllow ? prefix
-                        + " - Skipping as much as possible cutting planes during analysis conflict- Jan Elffers's algorithm \n"
+                + (this.skipAllow
+                        ? prefix + " - Skipping as much as possible cutting planes during analysis conflict- Jan Elffers's algorithm \n"
                         : "")
                 + prefix + " - " + postprocess + "\n" + prefix + " - "
                 + conflictFactory + "\n" + prefix + " - " + weakeningStrategy

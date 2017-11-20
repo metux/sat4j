@@ -88,7 +88,8 @@ public interface IWeakeningStrategy {
             int size = wpb.size();
             for (int ind = 0; ind < size && lit == -1; ind++) {
                 if (coefsBis[ind].signum() != 0
-                        && !voc.isFalsified(wpb.get(ind))) {
+                        && !voc.isFalsified(wpb.get(ind))
+                        && ind != indLitImplied) {
                     assert coefsBis[ind].compareTo(degreeBis) < 0;
                     lit = ind;
                 }

@@ -60,8 +60,12 @@ public class NaturalStaticOrder implements IOrder {
 
     @Override
     public int select() {
-        while (!voc.isUnassigned(LiteralsUtils.posLit(index))) {
+        while (!voc.isUnassigned(LiteralsUtils.posLit(index))
+                || !voc.belongsToPool(index)) {
             index++;
+            if (index > voc.nVars()) {
+                return ILits.UNDEFINED;
+            }
         }
         return phaseSelectionStrategy.select(index);
     }

@@ -54,6 +54,8 @@ public interface IConflict extends IDataStructurePB {
 
     boolean isAssertive(int dl);
 
+    boolean isUnsat();
+
     /**
      * Reduction d'une contrainte On supprime un litteral non assigne
      * prioritairement, vrai sinon. En aucun cas on ne supprime litImplied.

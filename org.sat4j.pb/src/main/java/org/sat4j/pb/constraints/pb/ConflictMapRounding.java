@@ -35,15 +35,12 @@ import org.sat4j.pb.core.PBSolverStats;
 
 public class ConflictMapRounding extends ConflictMap {
 
-    private final PBSolverStats stats;
-
     /**
      * @param cpb
      * @param level
      */
     public ConflictMapRounding(PBConstr cpb, int level, PBSolverStats stats) {
         super(cpb, level);
-        this.stats = stats;
     }
 
     /**
@@ -54,17 +51,37 @@ public class ConflictMapRounding extends ConflictMap {
     public ConflictMapRounding(PBConstr cpb, int level, boolean noRemove,
             PBSolverStats stats) {
         super(cpb, level, noRemove);
-        this.stats = stats;
+    }
+
+    public ConflictMapRounding(PBConstr cpb, int level, boolean noRemove,
+            boolean skip, IPostProcess postProcessing,
+            IWeakeningStrategy weakeningStrategy, PBSolverStats stats) {
+        super(cpb, level, noRemove, skip, postProcessing, weakeningStrategy,
+                stats);
     }
 
     public static IConflict createConflict(PBConstr cpb, int level,
-            PBSolverStats stats) {
-        return new ConflictMapRounding(cpb, level, stats);
+            boolean noRemove, boolean skip, IPostProcess postProcessing,
+            IWeakeningStrategy weakeningStrategy, PBSolverStats stats) {
+        return new ConflictMapRounding(cpb, level, noRemove, skip,
+                postProcessing, weakeningStrategy, stats);
     }
 
-    public static IConflict createConflict(PBConstr cpb, int level,
-            boolean noRemove, PBSolverStats stats) {
-        return new ConflictMapRounding(cpb, level, noRemove, stats);
+    public static IConflictFactory factory() {
+        return new IConflictFactory() {
+            @Override
+            public IConflict createConflict(PBConstr cpb, int level,
+                    boolean noRemove, boolean skip, IPostProcess postprocess,
+                    IWeakeningStrategy weakeningStrategy, PBSolverStats stats) {
+                return ConflictMapRounding.createConflict(cpb, level, noRemove,
+                        skip, postprocess, weakeningStrategy, stats);
+            }
+
+            @Override
+            public String toString() {
+                return "Always round the coefficient of the propagating literal to 1 during conflict analysis.";
+            }
+        };
     }
 
     static BigInteger ceildiv(BigInteger p, BigInteger q) {
@@ -89,7 +106,7 @@ public class ConflictMapRounding extends ConflictMap {
         boolean easyRounding = true;
         for (int k = 0; k < n; k++) {
             if (!sprime.equals(BigInteger.ZERO) && !voc.isFalsified(xyz.get(k))
-                    && xyz.get(k) != x && !abc[k].equals(BigInteger.ZERO)) {
+                    && !abc[k].mod(a).equals(BigInteger.ZERO)) {
                 // incremental computation of the slack proposed by Jakob
                 bigt = bigt.subtract(abc[k]);
                 tnewprime = ceildiv(bigt, a);

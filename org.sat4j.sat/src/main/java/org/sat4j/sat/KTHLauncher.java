@@ -25,6 +25,7 @@ import org.sat4j.pb.constraints.pb.ConflictMapReduceByGCD;
 import org.sat4j.pb.constraints.pb.ConflictMapReduceByPowersOf2;
 import org.sat4j.pb.constraints.pb.ConflictMapReduceToCard;
 import org.sat4j.pb.constraints.pb.ConflictMapReduceToClause;
+import org.sat4j.pb.constraints.pb.ConflictMapRounding;
 import org.sat4j.pb.constraints.pb.IWeakeningStrategy;
 import org.sat4j.pb.constraints.pb.PostProcessToCard;
 import org.sat4j.pb.constraints.pb.PostProcessToClause;
@@ -47,6 +48,7 @@ import org.sat4j.tools.DotSearchTracing;
  */
 public class KTHLauncher {
 
+    
     public static Options createCLIOptions() {
         Options options = new Options();
         options.addOption("cl", "coeflim", true,
@@ -234,6 +236,9 @@ public class KTHLauncher {
                             ConflictMapReduceToCard.factory());
                     break;
                 case "divide-v1":
+                    cpsolver.setConflictFactory(
+                            ConflictMapRounding.factory());  
+                    break;
                 case "divide-unless-equal":
                 case "divide-unless-divisor":
                 case "round-to-gcd":
@@ -305,7 +310,17 @@ public class KTHLauncher {
             PBSolverHandle handle = new PBSolverHandle(
                     new PseudoOptDecorator(pbsolver));
             OPBReader2012 reader = new OPBReader2012(handle);
-            OptToPBSATAdapter optimizer = new OptToPBSATAdapter(handle);
+            final OptToPBSATAdapter optimizer = new OptToPBSATAdapter(handle);
+            final Thread shutdownHook = new Thread() {
+                @Override
+                public void run() {
+                    // stop the solver before displaying solutions
+                    
+                    optimizer.expireTimeout();      
+                    optimizer.printStat(System.out, "c ");
+                }
+            };
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
             try {
                 reader.parseInstance(filename);
                 if (line.hasOption("dot-output")) {
@@ -328,7 +343,6 @@ public class KTHLauncher {
                 } else {
                     System.out.println("s UNSATISFIABLE");
                 }
-                optimizer.printStat(System.out, "c ");
             } catch (TimeoutException e) {
                 System.out.println("s UNKNOWN");
             } catch (ParseFormatException e) {

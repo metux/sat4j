@@ -64,6 +64,10 @@ public class PBSolverStats extends SolverStats {
 
     public long numberOfDerivationSteps;
 
+    public long numberOfRemainingUnassigned;
+
+    public long numberOfRemainingAssigned;
+
     @Override
     public void reset() {
         super.reset();
@@ -78,6 +82,8 @@ public class PBSolverStats extends SolverStats {
         this.numberOfEndingSkipping = 0;
         this.numberOfInternalSkipping = 0;
         this.numberOfDerivationSteps = 0;
+        this.numberOfRemainingUnassigned = 0;
+        this.numberOfRemainingAssigned = 0;
     }
 
     @Override
@@ -116,6 +122,10 @@ public class PBSolverStats extends SolverStats {
         out.println(prefix + "number of skipped derivation steps \t: "
                 + (this.numberOfInternalSkipping
                         + this.numberOfEndingSkipping));
+        out.println(prefix + "number of remaining unassigned \t: "
+                + this.numberOfRemainingUnassigned);
+        out.println(prefix + "number of remaining assigned \t: "
+                + this.numberOfRemainingAssigned);
     }
 
 }
