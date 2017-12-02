@@ -554,7 +554,6 @@ public class Solver<D extends DataStructureFactory>
             // literal is already satisfied. Skipping.
             return true;
         }
-        System.out.println("enqueue " + org.sat4j.core.LiteralsUtils.toDimacs(p));
         if (this.voc.isFalsified(p)) {
             // conflicting enqueued assignment
             return false;
@@ -1301,7 +1300,6 @@ public class Solver<D extends DataStructureFactory>
                 }
             }
             if (confl != null) {
-                System.out.println("conflict");
                 // conflict found
                 this.stats.conflicts++;
                 this.slistener.conflictFound(confl, decisionLevel(),

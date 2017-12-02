@@ -114,7 +114,6 @@ public class VarOrderHeap implements IOrder, Serializable {
                 if (this.activity[var] < 0.0001) {
                     this.nullchoice++;
                 }
-                System.out.println("select(): " + org.sat4j.core.LiteralsUtils.toDimacs(next));
                 return next;
             }
         }

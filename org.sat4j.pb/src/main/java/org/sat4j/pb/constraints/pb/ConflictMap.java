@@ -297,7 +297,6 @@ public class ConflictMap extends MapPb implements IConflict {
      */
     public BigInteger resolve(PBConstr cpb, int litImplied,
             VarActivityListener val) {
-        System.out.println("resolve(cpb="+cpb+", litImplied="+litImplied+")");
         assert litImplied > 1;
         int nLitImplied = litImplied ^ 1;
         if (cpb == null || !this.weightedLits.containsKey(nLitImplied)) {
@@ -324,10 +323,7 @@ public class ConflictMap extends MapPb implements IConflict {
             }
             return this.degree;
         }
-        System.out.println("resolve? " + org.sat4j.core.LiteralsUtils.toDimacs(litImplied));
         if (this.allowSkipping) {
-            System.out.println("skip");
-            System.out.println("coef: " + this.weightedLits.get(nLitImplied) + ", slack: " + slackConflict());
             if (this.weightedLits.get(nLitImplied).negate()
                     .compareTo(slackConflict()) > 0) {
                 if (this.endingSkipping)
@@ -350,7 +346,6 @@ public class ConflictMap extends MapPb implements IConflict {
         }
 
         stats.numberOfDerivationSteps++;
-        System.out.println("resolve " + org.sat4j.core.LiteralsUtils.toDimacs(litImplied));
         assert slackConflict().signum() < 0;
         assert this.degree.signum() >= 0;
 
@@ -447,7 +442,6 @@ public class ConflictMap extends MapPb implements IConflict {
         this.degree = saturation();
         assert slackConflict().signum() < 0;
         divideCoefs();
-        System.out.println("after resolve step: " + this);
         return this.degree;
     }
 
