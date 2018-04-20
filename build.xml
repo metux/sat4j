@@ -1,7 +1,7 @@
 <project name="sat4j" default="p2">
          <!-- using Eclipse compiler -->
          <!-- COMMENT THAT LINE IF YOU WANT TO USE DEFAULT JDK COMPILER -->        
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <!-- property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/ -->
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
@@ -327,7 +327,7 @@
 		source="1.5"
 		target="${target}"
 		debug="true"
-	        includeantruntime="false">
+	        includeantruntime="true">
 			<classpath refid="somePath"/>
 		</javac>
 		<copy todir="${build}" failonerror="false">
@@ -358,8 +358,8 @@
 				<include name="**/*.MF"/>
 			</fileset>
 		</copy>
-		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.MF"/></replace>
-                <replace dir="${build}" token="$${version}" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/></replace>
+		<replace dir="${build}" token="9.9.9.token" value="${release}.WHEEZY"><include name="**/*.MF"/></replace>
+                <replace dir="${build}" token="$${version}" value="${release}.WHEEZY"><include name="**/*.version"/></replace>
 		<replace dir="${build}" token="$${version}" value="${release}"><include name="**/about.html"/></replace>
                 <replace dir="${build}" token="$${next.eclipse.release.date}" value="${next.eclipse.release.date}"><include name="**/about.html"/></replace>
 		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"/>
