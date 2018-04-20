@@ -1,0 +1,20 @@
+Source: sat4j
+Section: science
+Priority: optional
+Maintainer: Michael Tautschnig <mt@debian.org>
+Build-Depends: debhelper (>= 10), ant
+Build-Depends-Indep: javahelper, default-jdk, libcommons-cli-java, libcommons-beanutils-java,
+ rhino, junit4, libjmock-java, ant-optional, libmockito-java, maven-repo-helper
+Standards-Version: 3.9.8
+Homepage: http://www.sat4j.org
+
+Package: sat4j
+Architecture: all
+Depends: ${java:Depends}, ${misc:Depends}
+Breaks: eclipse-platform (<= 3.5.2-5)
+Description: Efficient library of SAT solvers in Java
+ The aim of the SAT4J library is to provide an efficient library of SAT solvers
+ in Java. Compared to the OpenSAT project, the SAT4J library targets first
+ users of SAT "black boxes", willing to embed  SAT technologies into their
+ application without worrying about the details. The SAT4J project also tries
+ to provide a basis of work for SAT researchers.

@@ -1,0 +1,11 @@
+# Compulsory line, this is a version 3 file
+version=3
+
+# Uncomment to examine a Webpage
+# <Webpage URL> <string match>
+http://websvn.ow2.org/listing.php?repname=sat4j&path=%2Fmaven%2Ftags%2F \
+  listing.php\?repname=sat4j&amp;path=%2Fmaven%2Ftags%2Forg.ow2.sat4j.pom-(\d+.*)%2F
+#  path=%2Fmaven%2Ftags%2Forg.sat4j.pom-(\d.+)%2F
+# Uncomment to examine a Webserver directory
+#http://svn.forge.objectweb.org/cgi-bin/viewcvs.cgi/sat4j/maven/tags/ (\d+)_(\d+)_(\d+)/
+

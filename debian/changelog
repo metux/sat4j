@@ -1,0 +1,176 @@
+sat4j (2.3.5-0.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Re-enabled javahelper to properly compute the package dependencies
+  * Added symlinks to the old /usr/share/java/org.sat4j.*.jar files
+    to preserve the backward compatibility
+
+ -- Emmanuel Bourg <ebourg@apache.org>  Fri, 04 Nov 2016 23:10:51 +0100
+
+sat4j (2.3.5-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+
+  [ Luca Vercelli ]
+  * New upstream release. (Closes: #815911)
+  * Add Maven artifacts and install corresponding pom.xml files.
+
+  [ Markus Koschany ]
+  * Switch to compat level 10.
+  * Declare comliance with Debian Policy 3.9.8.
+  * Fix debian/watch and detect the latest upstream releases.
+  * Remove prebuilt jar files from the original tarball in get-orig-source
+    target.
+
+ -- Markus Koschany <apo@debian.org>  Sat, 29 Oct 2016 15:20:51 +0200
+
+sat4j (2.3.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Bumped standards version to 3.9.5 (no changes)
+
+ -- Michael Tautschnig <mt@debian.org>  Sat, 28 Jun 2014 17:04:41 +0100
+
+sat4j (2.3.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Bumped standards version to 3.9.4 (no changes)
+  * Use target 1.5 instead of jsr14 as Java7 no longer allows generics with
+    jsr14. Thanks Niels Thykier for the report and patch (closes: #678007)
+
+ -- Michael Tautschnig <mt@debian.org>  Sun, 02 Dec 2012 17:45:35 +0000
+
+sat4j (2.3.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Bumped standards version to 3.9.3 (no changes)
+  * Added link to existing (but CC-BY-NC-ND) documentation
+    (closes: #635357)
+  * No longer requires maxsat-as-patch
+
+ -- Michael Tautschnig <mt@debian.org>  Sun, 04 Mar 2012 01:38:25 +0000
+
+sat4j (2.3.0-3) unstable; urgency=low
+
+  * Reworked debian/rules using dh+jh (closes: #641378)
+  * Cleanup patch names to make dpkg happy
+  * Build level 1.5 bytecode as requested on eclipse/linuxtools-dev
+
+ -- Michael Tautschnig <mt@debian.org>  Mon, 24 Oct 2011 10:39:02 +0100
+
+sat4j (2.3.0-2) unstable; urgency=low
+
+  * Include maxsat solver (closes: #636784)
+
+ -- Michael Tautschnig <mt@debian.org>  Wed, 10 Aug 2011 00:35:50 +0200
+
+sat4j (2.3.0-1) unstable; urgency=low
+
+  * New upstream release (closes: #630720)
+  * Bumped standards version to 3.9.2 (no changes)
+
+ -- Michael Tautschnig <mt@debian.org>  Thu, 16 Jun 2011 18:16:35 +0200
+
+sat4j (2.2.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Changed build-date from SQUEEZE to WHEEZY
+
+ -- Michael Tautschnig <mt@debian.org>  Tue, 08 Feb 2011 18:36:34 +0100
+
+sat4j (2.2.0-3) unstable; urgency=low
+
+  * Replace BUILD_DATE property by fixed string "SQUEEZE" to make eclipse
+    happy, changed Breaks to eclipse (<= 3.5.2-5) (closes: #592181)
+
+ -- Michael Tautschnig <mt@debian.org>  Mon, 16 Aug 2010 12:43:47 +0200
+
+sat4j (2.2.0-2) unstable; urgency=low
+
+  * Disabled very expensive tests
+    CompetPBRes(Min)?HTMixedConstraintsObjectiveLearningTest to fix FTBFS
+    (closes: #591140)
+  * Bumped standards version to 3.9.1 (no changes)
+
+ -- Michael Tautschnig <mt@debian.org>  Sun, 01 Aug 2010 12:03:10 +0200
+
+sat4j (2.2.0-1) unstable; urgency=low
+
+  * New upstream release (closes: #586437)
+    - added Breaks: eclipse (<= 3.5.2-3) as requested by eclipse devs
+
+ -- Michael Tautschnig <mt@debian.org>  Thu, 24 Jun 2010 10:14:30 +0200
+
+sat4j (2.1.1-3) unstable; urgency=low
+
+  * Bumped standards version to 3.8.4 (no changes)
+  * Use ${java:Depends} and javahelper to get proper dependencies (closes:
+    #577479)
+
+ -- Michael Tautschnig <mt@debian.org>  Tue, 13 Apr 2010 16:51:40 +0200
+
+sat4j (2.1.1-2) unstable; urgency=low
+
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Bumped priority to optional to aid eclipse (closes: #564439)
+  * Updated watch file to cope with WebSVN
+  * Added ${misc:Depends} as required by debhelper
+  * Removed lintian override build-depends-without-arch-dep ant which isn't
+    necessary anymore.
+
+ -- Michael Tautschnig <mt@debian.org>  Sat, 16 Jan 2010 14:13:00 +0100
+
+sat4j (2.1.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Bumped standards version to 3.8.3 (no changes)
+
+ -- Michael Tautschnig <mt@debian.org>  Mon, 02 Nov 2009 22:16:18 +0100
+
+sat4j (2.0.5-2) unstable; urgency=low
+
+  * Dropped use of junit, only junit4 remains (fixes spurious errors in unit
+    tests)
+  * Added lintian source override for build-depends-without-arch-dep ant
+  * Reworded description as suggested by lintian (using-first-person)
+
+ -- Michael Tautschnig <mt@debian.org>  Mon, 16 Feb 2009 11:35:25 +0000
+
+sat4j (2.0.5-1) unstable; urgency=low
+
+  * New upstream release
+  * Replace use of /usr/bin/ant by proper java use (closes: #512007)
+  * Fixed minor bug in shipped build.xml instead of using home-grown build.xml
+
+ -- Michael Tautschnig <mt@debian.org>  Sat, 31 Jan 2009 12:30:40 +0000
+
+sat4j (2.0.4-2) unstable; urgency=low
+
+  * Run tests after build unless nocheck
+  * Requires ant-optional
+
+ -- Michael Tautschnig <mt@debian.org>  Sun, 02 Nov 2008 18:42:11 +0000
+
+sat4j (2.0.4-1) unstable; urgency=low
+
+  * New upstream version (closes: #494944)
+  * Depend on proper java6 runtime (closes: #503796)
+
+ -- Michael Tautschnig <mt@debian.org>  Sat, 01 Nov 2008 16:38:35 +0000
+
+sat4j (2.0.2-1) unstable; urgency=low
+
+  * New upstream version (closes: #493917)
+  * Switching over to openjdk-6 to get package fit for main
+  * Fixed warnings caused by errors in ant build file
+  * Build-depends on ant because it is used in clean,
+    added lintian override
+
+ -- Michael Tautschnig <mt@debian.org>  Fri, 22 Aug 2008 14:04:11 +0000
+
+sat4j (2.0.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #485127)
+
+ -- Michael Tautschnig <mt@debian.org>  Tue, 22 Jul 2008 09:27:20 +0000
+

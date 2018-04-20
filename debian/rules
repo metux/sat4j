@@ -1,0 +1,101 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include /usr/share/javahelper/java-vars.mk
+DEB_JARS  := ant ant-launcher ant-junit commons-cli commons-beanutils js junit4 jmock hamcrest-core mockito-core
+
+DEB_CLASSPATH = $(shell for jar in $(DEB_JARS:%=/usr/share/java/%.jar); do \
+	echo -n $${jar}:; done; \
+	echo -n $(JAVA_HOME)/lib/tools.jar)
+
+ANT_ARGS	:= -propertyfile debian/ant.properties
+ANT				:= CLASSPATH=$(DEB_CLASSPATH) $(JAVA_HOME)/bin/java org.apache.tools.ant.Main $(ANT_ARGS)
+
+
+VERSION=$(shell dpkg-parsechangelog | grep Version | awk '{ print $$2 }' | sed 's/-.*//')
+
+#FIXME
+#ifneq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+#  with_check := disabled by DEB_BUILD_OPTIONS.
+#else
+#  with_check := yes
+#endif
+with_check := disabled because too long
+
+
+%:
+	dh $@ --with maven-repo-helper --with javahelper
+
+override_dh_clean:
+	$(RM) debian/jlibs
+	$(ANT) -Drelease=$(VERSION) clean cleanrelease
+	dh_clean
+
+override_dh_auto_build:
+	mkdir -p org.sat4j.maxsat/src/main/resources
+	$(ANT) -Drelease=$(VERSION) p2 maxsat
+	$(RM) $(CURDIR)/dist/$(VERSION)/*-src.jar
+	#for j in $(CURDIR)/dist/$(VERSION)/*.jar ; do echo $$j >> debian/jlibs ; done
+
+override_dh_auto_test:
+	dh_testdir
+ifeq ($(with_check),yes)
+	$(ANT) -Drelease=$(VERSION) p2-tests
+else
+	@echo "Testsuite not run: $(with_check)."
+endif
+
+### # Build architecture-independent files here.
+### binary-indep: build install
+### 	dh_testdir
+### 	dh_testroot
+### 	dh_installchangelogs
+### 	dh_installdocs
+### 	dh_installexamples
+### #	dh_install
+### #	dh_installmenu
+### #	dh_installdebconf
+### #	dh_installlogrotate
+### #	dh_installemacsen
+### #	dh_installpam
+### #	dh_installmime
+### #	dh_python
+### #	dh_installinit
+### #	dh_installcron
+### #	dh_installinfo
+### 	dh_installman debian/sat4j.1
+### 	dh_lintian -i
+### 	dh_link -i
+### 	jh_installlibs -i $(CURDIR)/dist/$(VERSION)/*.jar
+### 	jh_exec -i
+### 	jh_depends -i
+### 	dh_strip
+### 	dh_compress
+### 	dh_fixperms
+### #	dh_perl
+### #	dh_makeshlibs
+### 	dh_installdeb
+### 	dh_shlibdeps
+### 	dh_gencontrol
+### 	dh_md5sums
+### 	dh_builddeb
+
+TAG_VERS=org.ow2.sat4j.pom-2.3.5
+DEB_VERS=2.3.5
+get-orig-source:
+	svn export svn://svn.forge.objectweb.org/svnroot/sat4j/maven/tags/$(TAG_VERS)/ sat4j-$(DEB_VERS)
+	cd sat4j-$(DEB_VERS) ; rm -r org.sat4j.csp/ org.sat4j.csp.xmlparser/
+	for i in `find sat4j-$(DEB_VERS) -name "*.java"` ; do grep -q "Copyright" $$i || echo $$i ; done
+	find sat4j-$(DEB_VERS) -name "*.jar" -delete
+	tar cf sat4j_$(DEB_VERS).orig.tar sat4j-$(DEB_VERS)
+	rm -rf sat4j-$(DEB_VERS)
+	gzip -9n sat4j_$(DEB_VERS).orig.tar
+
